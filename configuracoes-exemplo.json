@@ -1,0 +1,15 @@
+{
+    "pastas": {
+        "imagens": [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff"],
+        "planilhas": [".xlsx", ".xlsm", ".xls", ".ods"],
+        "pdfs": [".pdf"],
+        "csv": [".csv"],
+        "documentos": [".doc", ".docx", ".odt", ".rtf"],
+        "apresentacoes": [".ppt", ".pptx", ".odp"],
+        "arquivos_comprimidos": [".zip", ".rar", ".7z", ".tar.gz"],
+        "arquivos_de_texto": [".txt", ".log", ".md"],
+        "aplicativos": [".exe", ".msi"],
+        "videos": [".mp4", ".mov", ".avi", ".mkv", ".wmv", ".flv", ".webm"],
+        "musicas": [".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma", ".m4a"]
+    }
+}
