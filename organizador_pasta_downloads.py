@@ -1,9 +1,19 @@
 import os
 import json
 import shutil
+import logging
 
 # Caminho do diretório do projeto
 caminho_projeto = os.path.dirname(os.path.abspath(__file__))
+
+# Configuração do logger
+logging.basicConfig(
+    filename=os.path.join(caminho_projeto, 'erros.log'),
+    level=logging.ERROR,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%d/%m/%Y %H:%M:%S',
+    encoding='utf-8'
+)
 
 # Caminho do arquivo JSON
 caminho_json = os.path.join(caminho_projeto, 'configuracoes.json')
@@ -43,5 +53,11 @@ for nome_arquivo in os.listdir(caminho_downloads):
                     shutil.move(caminho_arquivo, novo_caminho)
                     print(f'Movido: {nome_arquivo} para {destino}')
                 except PermissionError:
-                    print(f'Não foi possível mover o arquivo: {nome_arquivo}. Ele pode estar em uso.')
+                    mensagem_erro = f'Não foi possível mover o arquivo: {nome_arquivo}. Ele pode estar em uso.'
+                    print(mensagem_erro)
+                    logging.error(mensagem_erro)
+                except Exception as e:
+                    mensagem_erro = f'Erro ao mover o arquivo {nome_arquivo}. {str(e)}'
+                    print(mensagem_erro)
+                    logging.error(mensagem_erro)
                 break # Saindo do loop, já que encontramos a pasta correta e movemos o arquivo
