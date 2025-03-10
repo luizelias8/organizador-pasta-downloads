@@ -1,14 +1,14 @@
-import os
+from pathlib import Path
 import json
 import shutil
 import logging
 
 # Caminho do diretório do projeto
-caminho_projeto = os.path.dirname(os.path.abspath(__file__))
+caminho_projeto = Path(__file__).parent.absolute()
 
 # Configuração do logger
 logging.basicConfig(
-    filename=os.path.join(caminho_projeto, 'erros.log'),
+    filename=caminho_projeto / 'erros.log',
     level=logging.ERROR,
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%d/%m/%Y %H:%M:%S',
@@ -16,7 +16,7 @@ logging.basicConfig(
 )
 
 # Caminho do arquivo JSON
-caminho_json = os.path.join(caminho_projeto, 'configuracoes.json')
+caminho_json = caminho_projeto / 'configuracoes.json'
 
 # Lendo o arquivo JSON
 with open(caminho_json, 'r') as arquivo_json:
@@ -26,38 +26,35 @@ with open(caminho_json, 'r') as arquivo_json:
 pastas = configuracoes.get('pastas', {})
 
 # Obtendo o caminho da pasta de Downloads no Windows
-caminho_downloads = os.path.join(os.environ['USERPROFILE'], 'Downloads')
+caminho_downloads = Path.home() / 'Downloads'
 
 # Criando as pastas de destino se não existirem
 for nome_pasta in pastas.keys():
-    caminho_pasta = os.path.join(caminho_downloads, nome_pasta)
-    if not os.path.exists(caminho_pasta):
-        os.makedirs(caminho_pasta)
+    caminho_pasta = caminho_downloads / nome_pasta
+    caminho_pasta.mkdir(exist_ok=True)
 
 # Percorrendo os arquivos na pasta de downloads
-for nome_arquivo in os.listdir(caminho_downloads):
-    caminho_arquivo = os.path.join(caminho_downloads, nome_arquivo)
-
+for caminho_arquivo in caminho_downloads.iterdir():
     # Verificando se é um arquivo (e não uma pasta)
-    if os.path.isfile(caminho_arquivo):
+    if caminho_arquivo.is_file():
         # Obtendo a extensão do arquivo
-        _, extensao = os.path.splitext(nome_arquivo)
+        extensao = caminho_arquivo.suffix
 
         # Tentando encontrar a pasta correspondente para a extensão
         for nome_pasta, extensoes in pastas.items():
             if extensao.lower() in extensoes:
-                destino = os.path.join(caminho_downloads, nome_pasta)
+                destino = caminho_downloads / nome_pasta
                 # Tentando mover o arquivo para a pasta de destino
                 try:
-                    novo_caminho = os.path.join(destino, nome_arquivo)
-                    shutil.move(caminho_arquivo, novo_caminho)
-                    print(f'Movido: {nome_arquivo} para {destino}')
+                    novo_caminho = destino / caminho_arquivo.name
+                    shutil.move(str(caminho_arquivo), str(novo_caminho))
+                    print(f'Movido: {caminho_arquivo.name} para {destino}')
                 except PermissionError:
-                    mensagem_erro = f'Não foi possível mover o arquivo: {nome_arquivo}. Ele pode estar em uso.'
+                    mensagem_erro = f'Não foi possível mover o arquivo: {caminho_arquivo.name}. Ele pode estar em uso.'
                     print(mensagem_erro)
                     logging.error(mensagem_erro)
                 except Exception as e:
-                    mensagem_erro = f'Erro ao mover o arquivo {nome_arquivo}. {str(e)}'
+                    mensagem_erro = f'Erro ao mover o arquivo {caminho_arquivo.name}. {str(e)}'
                     print(mensagem_erro)
                     logging.error(mensagem_erro)
                 break # Saindo do loop, já que encontramos a pasta correta e movemos o arquivo
