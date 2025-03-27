@@ -28,11 +28,6 @@ pastas = configuracoes.get('pastas', {})
 # Obtendo o caminho da pasta de Downloads no Windows
 caminho_downloads = Path.home() / 'Downloads'
 
-# Criando as pastas de destino se não existirem
-for nome_pasta in pastas.keys():
-    caminho_pasta = caminho_downloads / nome_pasta
-    caminho_pasta.mkdir(exist_ok=True)
-
 # Percorrendo os arquivos na pasta de downloads
 for caminho_arquivo in caminho_downloads.iterdir():
     # Verificando se é um arquivo (e não uma pasta)
@@ -44,6 +39,12 @@ for caminho_arquivo in caminho_downloads.iterdir():
         for nome_pasta, extensoes in pastas.items():
             if extensao.lower() in extensoes:
                 destino = caminho_downloads / nome_pasta
+
+                # Criando a pasta de destino sob demanda (caso ainda não tenha sido criada)
+                if not destino.exists():
+                    destino.mkdir()
+                    print(f'Pasta criada: {destino}')
+
                 # Tentando mover o arquivo para a pasta de destino
                 try:
                     novo_caminho = destino / caminho_arquivo.name
